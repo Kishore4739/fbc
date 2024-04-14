@@ -1,0 +1,52 @@
+SHA
+The following command will produce a hash of 256-bits of Hello messages using
+the
+SHA256 algorithm:
+$ echo -n 'Hello' | openssl dgst -sha256
+(stdin)=
+85f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969
+Note that even a small change in the text, such as changing the case of H, results
+in a big change in the output hash. This is known as avalanche effect, as
+discussed earlier:
+$ echo -n 'hello' | openssl dgst -sha256
+(stdin)=
+2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+Note that both outputs are completely different:
+Observe
+Hello:
+18:5f:8d:b3:22:71:fe:25:f5:61:a6:fc:93:8b:2e:26:43:06:ec:30:4e:da:51:80:07:d1:76:48:26:38:19:69
+hello:
+2c:f2:4d:ba:5f:b0:a3:0e:26:e8:3b:2a:c5:b9:e2:9e:1b:16:1e:5c:1f:a7:42:5e:73:04:33:62:93:8b:98:24
+DSA
+The first step is to generate a hash of the message file:
+$ openssl dgst -sha256 message.txt
+SHA256(message.txt)=
+eb96d1f89812bf4967d9fb4ead128c3b787272b7be21dd2529278db1128d559c
+Both hash generation and signing can be done in a single step, as shown here.
+Note that
+privatekey.pem is generated in the steps provided previously:
+$ openssl dgst -sha256 -sign privatekey.pem -out signature.bin message.txt
+Now let's display the directory showing relevant files:
+$ ls -ltr
+total 36
+-rw-rw-r-- 1 drequinox drequinox 14 Sep 21 05:54 message.txt
+-rw-rw-r-- 1 drequinox drequinox 32 Sep 21 05:57 message.bin
+-rw-rw-r-- 1 drequinox drequinox 45 Sep 21 06:00 message.b64
+-rw-rw-r-- 1 drequinox drequinox 32 Sep 21 06:16 message.ptx
+-rw-rw-r-- 1 drequinox drequinox 916 Sep 21 06:28 privatekey.pem
+-rw-rw-r-- 1 drequinox drequinox 272 Sep 21 06:30 publickey.pem
+-rw-rw-r-- 1 drequinox drequinox 128 Sep 21 06:43 message.rsa
+-rw-rw-r-- 1 drequinox drequinox 14 Sep 21 06:49 message.dec
+-rw-rw-r-- 1 drequinox drequinox 128 Sep 21 07:05 signature.bin
+$ cat signature.bin
+In order to verify the signature, the following operation can be performed:
+$ openssl dgst -sha256 -verify publickey.pem -signature signature.bin
+message.txt
+Verified OK
+:~/Crypt$
+Similarly, if some other signature file that is not valid is used, the verification will
+fail, as
+shown here:
+$ openssl dgst -sha256 -verify publickey.pem -signature someothersignature.bin
+message.txt
+Verification Failure
