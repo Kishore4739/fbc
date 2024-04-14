@@ -1,0 +1,26 @@
+$ openssl genpkey -algorithm RSA -out privatekey.pem –pkeyopt
+rsa_keygen_bits:1024
+...............................++++++
+....................++++++
+After executing the command, a file named privatekey.pem is produced, which
+contains the generated private key. This is shown as follows:
+$ cat privatekey.pem
+$ openssl rsa -pubout -in privatekey.pem -out publickey.pem
+writing RSA key
+Public key can be viewed using a file reader or any text viewer, as shown here:
+$ cat publickey.pem
+$ openssl rsa -text -in privatekey.pem
+RSA Encryption
+Taking the private key generated in the earlier example, the command to encrypt
+a text file message.txt can be constructed, as shown here:
+$ openssl rsautl -encrypt -inkey publickey.pem -pubin -in message.txt -out
+message.rsa
+This will produce a file named message.rsa, which is in a binary format. If we
+open message.rsa in the nano editor(install nano if needed), it will show some
+21BQ1A4739
+garbage:
+Decrypt: Inorder to decrypt the RSA encrypted file, the following command can be used:
+$ openssl rsautl -decrypt -inkey privatekey.pem -in message.rsa -out
+message.dec
+Now if the file is read using cat, decrypted plain text can be seen, as shown here:
+$ cat message.dec
