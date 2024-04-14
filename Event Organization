@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >0.8.0 <0.9.0;
+contract EventOrganization {
+uint eventID; // Counter for event IDs
+struct Event {
+address Event_Organizer; // Address of the event organizer
+string Event_Name; // Name of the event
+uint Event_Date; // Date of the event (timestamp)
+uint Event_Price; // Price per ticket (in wei)
+uint Event_Total_Tickets; // Total number of tickets available for the event
+uint Event_Remain_Tickets; // Number of tickets remaining for sale
+}
+mapping(uint => Event) public events; // Mapping to store events by their IDs
+mapping(address => mapping(uint => uint)) public tickets; // Mapping to store tickets bought by
+each user for each event
+// Function to create a new event
+function createEvent(string memory _event_name, uint _event_date, uint _event_price, uint
+_event_total_tickets) external {
+require(_event_date > block.timestamp + 1 days, "You can't set event in the past, event date must
+be after one day");
+require(_event_total_tickets > 0, "You can organize an event when the amount of tickets is more
+than 0");
+events[eventID] = Event(msg.sender, _event_name, _event_date, _event_price,
+_event_total_tickets, _event_total_tickets);
+eventID++;
+}
+// Function to buy tickets for an event
+function buyTickets(uint _event_id, uint _ticket_quantity) external payable {
+require(events[_event_id].Event_Date != 0, "Event does not exist");
+require(events[_event_id].Event_Date > block.timestamp, "Event has already occurred");
+Event storage _event = events[_event_id];
+require(msg.value == (_event.Event_Price * _ticket_quantity), "Please pay the correct amount");
+require(_event.Event_Remain_Tickets >= _ticket_quantity, "Not enough tickets available");
+payable(_event.Event_Organizer).transfer(msg.value); // Transfer payment to the event organizer
+_event.Event_Remain_Tickets -= _ticket_quantity; // Update remaining tickets
+tickets[msg.sender][_event_id] += _ticket_quantity; // Record purchased tickets for the buyer
+}
+// Function to transfer tickets to another user
+function transferTickets(uint _event_id, uint _ticket_quantity, address _to) external {
+require(events[_event_id].Event_Date != 0, "Event does not exist");
+require(events[_event_id].Event_Date > block.timestamp, "Event has already occurred");
+require(tickets[msg.sender][_event_id] >= _ticket_quantity, "You do not have enough tickets");
+tickets[msg.sender][_event_id] -= _ticket_quantity; // Remove transferred tickets from sender
+tickets[_to][_event_id] += _ticket_quantity; // Add transferred tickets to recipient
+}
+}
