@@ -1,0 +1,34 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract PRBank {
+address Owner; // Address of the contract owner
+mapping(address => uint) Balance; // Mapping to store account balances
+// Constructor to set the contract owner
+constructor() {
+Owner = msg.sender;
+}
+// Function to add funds to the account balance
+function addBalance(uint amt) public returns(uint) {
+require(msg.sender == Owner, "Only the owner can add funds"); // Require that only the owner
+can add funds
+Balance[msg.sender] += amt; // Increase the balance of the owner's account
+return Balance[msg.sender]; // Return the updated balance
+}
+// Function to get the balance of the caller's account
+function getBalance() public view returns(uint) {
+return Balance[msg.sender]; // Return the balance of the caller's account
+}
+// Function to transfer funds to another account
+function transfer(address recipient, uint amt) public {
+require(msg.sender != recipient, "Cannot transfer to self"); // Require that the sender and recipient
+are different
+require(Balance[msg.sender] >= amt, "Insufficient balance"); // Require that the sender has
+sufficient balance
+_transfer(msg.sender, recipient, amt); // Call internal transfer function
+}
+// Internal function to perform the transfer
+function _transfer(address from, address to, uint amount) private {
+Balance[from] -= amount; // Decrease sender's balance
+Balance[to] += amount; // Increase recipient's balance
+}
+}
