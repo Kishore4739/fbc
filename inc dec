@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+contract Counter {
+uint public count = 10; // Public state variable to store the count, initialized to 10
+// Function to get the current count
+function get() public view returns(uint) {
+return count; // Returns the current value of the count
+}
+// Function to increment the count
+function inc() public {
+count += 1; // Increases the count by 1
+}
+// Function to decrement the count
+function dec() public {
+count -= 1; // Decreases the count by 1
+}
+}
