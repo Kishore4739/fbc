@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: MIT pragma solidity ^0.8.0;
+contract MedicalHistory {
+struct Patient {
+string name;
+uint age;
+string previousHealthConditions; string medications;
+}
+mapping(address => Patient) public patients;
+event PatientAdded(address indexed patientAddress, string name, uint age, string
+previousHealthConditions, string medications);
+event PatientUpdated(address indexed patientAddress, string name, uint age, string
+previousHealthConditions, string medications);
+function addPatient(address _address, string memory _name, uint _age, string memory
+_previousHealthConditions, string memory _medications) public {
+require(_address != address(0), "Invalid address"); require(bytes(_name).length > 0, "Name
+cannot be empty"); require(_age > 0, "Age should be greater than zero");
+patients[_address] = Patient(_name, _age, _previousHealthConditions,_medications);
+emit PatientAdded(_address, _name, _age, _previousHealthConditions,_medications);
+}
+function update(address _address, string memory _name, uint _age, string memory
+_previousHealthConditions, string memory _medications) public {
+require(_address != address(0), "Invalid address"); require(bytes(_name).length > 0, "Name
+cannot be empty"); require(_age > 0, "Age should be greater than zero");
+patients[_address].name = _name; patients[_address].age = _age;
+patients[_address].previousHealthConditions =_previousHealthConditions;
+patients[_address].medications = _medications;
+emit PatientUpdated(_address, _name, _age, _previousHealthConditions,_medications);
+}
+}
