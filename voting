@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract EVoting {
+address public owner; // Address of the contract owner
+// Enum to represent different candidates
+enum Candidate { Candidate1, Candidate2, Candidate3 }
+// Mapping to store whether an address has voted
+mapping(address => bool) public hasVoted;
+// Mapping to store the number of votes for each candidate
+mapping(Candidate => uint256) private votes;
+// Event emitted when a voter casts a vote
+event Voted(address indexed voter, Candidate candidate);
+// Modifier to restrict access to the owner
+modifier onlyOwner() {
+require(msg.sender == owner, "Only the owner can call this function");
+_;
+}
+// Constructor to set the owner of the contract
+constructor() {
+owner = msg.sender;
+}
+// Function for voters to cast their vote
+function vote(Candidate _candidate) external {
+require(!hasVoted[msg.sender], "You have already voted"); // Check if the sender has already
+voted
+votes[_candidate]++; // Increment the vote count for the chosen candidate
+hasVoted[msg.sender] = true; // Mark the sender as having voted
+emit Voted(msg.sender, _candidate); // Emit the Voted event
+}
+// Function for the owner to get the number of votes for a specific candidate
+function getVotes(Candidate _candidate) external view returns (uint256) {
+require(msg.sender == owner, "Only the owner can call this function"); // Check if the caller is
+the owner
+return votes[_candidate]; // Return the number of votes for the specified candidate
+}
+}
