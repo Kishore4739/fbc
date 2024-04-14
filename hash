@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
+contract Prhash {
+uint public hashDigits = 8; // Number of digits in the hash value
+uint hashModulus = 10 ** hashDigits; // Modulus used to limit the hash value
+// Function to generate a hash value for a given input string
+function generateRandom(string memory _str) public view returns(uint) {
+uint random = uint(keccak256(abi.encodePacked(_str))); // Generate a random number using the
+keccak256 hash function
+return random % hashModulus; // Return the hash value within the specified modulus range
+}
+}
